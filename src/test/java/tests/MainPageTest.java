@@ -1,29 +1,20 @@
 package tests;
 
-
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.chrome.ChromeOptions;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
 import pageobjects.MainPage;
 
-import java.time.Duration;
 import java.util.Arrays;
 import java.util.Collection;
 
 import static org.junit.Assert.assertEquals;
 
 @RunWith(Parameterized.class)
-public class MainPageTest {
-    private WebDriver driver;
+public class MainPageTest extends BaseTest {
+
     private MainPage mainPage;
     private int questionIndex;
     private String expectedAnswer;
@@ -49,27 +40,16 @@ public class MainPageTest {
 
     @Before
     public void setUp() {
-        ChromeOptions options = new ChromeOptions();
-        options.addArguments("--no-sandbox", "--headless", "--disable-dev-shm-usage");
-        driver = new ChromeDriver(options);
+        super.setUp();
         mainPage = new MainPage(driver);
-        driver.get("https://qa-scooter.praktikum-services.ru/");
     }
 
     @Test
     public void testQuestions() {
         WebElement question = mainPage.getQuestion(questionIndex);
         question.click();
-        // Ожидаем, пока панель аккордеона станет видимой
-        new WebDriverWait(driver, 3)
-        .until(ExpectedConditions.visibilityOfElementLocated(By.id("accordion__panel-" + questionIndex)));
-        WebElement answer = question.findElement(By.xpath("//div[@data-accordion-component='AccordionItemPanel' and @id='accordion__panel-" + questionIndex + "']/p"));
+        WebElement answer = mainPage.getAnswer(questionIndex);
         String actualAnswer = answer.getText();
         assertEquals("Текст ответа не совпадает с ожидаемым", expectedAnswer, actualAnswer);
-    }
-
-    @After
-    public void tearDown() {
-        driver.quit();
     }
 }
